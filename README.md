@@ -29,7 +29,7 @@ The core idea: "Send in chaos. Receive in order. Timestamps bind everything."
 
 - Out-of-order delivery support
 - Data can arrive before key - buffered until key arrives
-- High latency tolerance - no timeout issues
+- high-latency tolerant - packet completion is time-window based
 - Dummy packet mixing - traffic analysis resistance
 - Multi-layer encryption - AES-256 + ChaCha20-Poly1305
 - Simple implementation - just timestamps and a buffer
