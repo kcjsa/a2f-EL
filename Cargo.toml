@@ -2,11 +2,10 @@
 name = "a2f"
 version = "0.2.0"
 edition = "2021"
-description = "Analysis to Fake - Asynchronous timestamp-bonded cryptography protocol for high-latency and unstable networks"
+description = "Analysis to Fake - Asynchronous timestamp-bonded cryptography protocol"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/kcjsa/a2f"
-keywords = ["cryptography", "protocol", "networking", "udp", "timestamp"]
-categories = ["cryptography", "network-programming"]
+exclude = ["target/", "test_code.zip"]
 
 [dependencies]
 aes-gcm = "0.10"
