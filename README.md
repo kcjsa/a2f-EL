@@ -44,7 +44,7 @@ a2f = { git = "https://github.com/kcjsa/a2f" }
 a2f = "0.1.0"
 
 Basic usage example:
-
+```
 use a2f::{A2FConfig, A2FSender, A2FReceiver, current_timestamp};
 
 fn main() -> anyhow::Result<()> {
@@ -68,7 +68,7 @@ fn main() -> anyhow::Result<()> {
     }
     
     Ok(())
-}
+}```
 
 ## Test Results
 
