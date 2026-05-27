@@ -29,7 +29,6 @@ pub fn current_timestamp() -> u64 {
         .as_millis() as u64
 }
 
-/// 次のシーケンス番号を取得（スレッドセーフ）
 pub fn next_sequence() -> u64 {
     GLOBAL_SEQ.fetch_add(1, Ordering::SeqCst)
 }
@@ -118,7 +117,6 @@ impl SlidingWindow {
     }
     
     /// シーケンス番号をチェックし、受信済みとして記録する
-    /// 戻り値: true=受理（初めてのパケット）、false=拒否（リプレイ）
     fn check_and_record(&mut self, seq: u64) -> bool {
         // ウィンドウ下限より古いものは拒否
         if seq < self.min_seq {
