@@ -27,7 +27,7 @@ The core idea: "Send in chaos. Receive in order. Timestamps bind everything."
 
 ## Features
 
-- Out-of-order delivery support - no retransmission needed
+- Out-of-order delivery support
 - Data can arrive before key - buffered until key arrives
 - High latency tolerance - no timeout issues
 - Dummy packet mixing - traffic analysis resistance
