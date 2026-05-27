@@ -40,6 +40,8 @@ Add to your Cargo.toml:
 
 [dependencies]
 a2f = { git = "https://github.com/kcjsa/a2f" }
+もしくは 
+a2f = "0.1.0"
 
 Basic usage example:
 
