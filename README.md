@@ -93,8 +93,7 @@ All tests passed:
 
 - Multi-layer encryption: AES-256 plus ChaCha20-Poly1305
 - Traffic analysis resistant due to random packet order
-- No plaintext key transmission
- (A2F assumes a reliable or semi-reliable UDP transport such as RakNet.)
+- A2F is designed as a transport-agnostic layer and can be implemented over different unreliable or partially reliable datagram transports such as UDP, RakNet, or WebRTC data channels via adapters.
 - Ephemeral session keys
 
 ## License
