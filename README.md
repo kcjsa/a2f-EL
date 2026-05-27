@@ -1,4 +1,4 @@
-# Copyright (c) 2026 kcjsa
+Copyright (c) 2026 kcjsa
 # A2F - Analysis to Fake Protocol
 
 A2F is an asynchronous, out-of-order tolerant, high-latency cryptography protocol.
