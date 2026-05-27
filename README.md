@@ -95,7 +95,7 @@ All tests passed:
 
 ## License
 
-MIT or Apache-2.0
+Apache-2.0
 
 ## Author
 
