@@ -1,69 +1,51 @@
 # A2F - Analysis to Fake Protocol
 
-[![Rust](https://img.shields.io/badge/rust-1.70+-blue.svg)](https://www.rust-lang.org)
-[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-green.svg)](LICENSE)
+A2F is an asynchronous, out-of-order tolerant, high-latency cryptography protocol.
 
-**A2F is an asynchronous, out-of-order tolerant, high-latency cryptography protocol.**
-
-> "Send in chaos. Receive in order. Timestamps bind everything."
+The core idea: "Send in chaos. Receive in order. Timestamps bind everything."
 
 ## How It Works
-SENDER:
 
-Generate session key K_t
+**Sender:**
+1. Generate a session key K_t for timestamp t
+2. Wrap the session key using AES-256 + ChaCha20-Poly1305
+3. Encrypt the data using the session key
+4. Attach timestamp t to both the wrapped key and encrypted data
+5. Shuffle all packets and send them in random order
 
-Wrap K_t with AES-256 + ChaCha20-Poly1305
+**Network:**
+- Packets may arrive out of order
+- Packets may be lost
+- Packets may be delayed (high latency)
 
-Encrypt data with K_t
-
-Attach timestamp t to both
-
-Shuffle and send in random order
-|
-V
-UNSTABLE NETWORK:
-
-Out of order
-
-Packet loss
-
-High latency
-|
-V
-RECEIVER:
-
-Receive packets in any order
-
-Buffer by timestamp
-
-When both key and data arrive, decrypt
-
-Old packets expire after timeout
-
-text
+**Receiver:**
+1. Receive packets in any order
+2. Buffer packets by timestamp
+3. When both the key and data for a timestamp arrive, decrypt the data
+4. Old packets that never complete expire after a timeout
 
 ## Features
 
-- Out-of-order delivery support (no retransmission)
-- Data can arrive before key (buffered)
-- High latency tolerance (no timeout issues)
-- Dummy packet mixing (traffic analysis resistance)
-- Multi-layer encryption (AES-256 + ChaCha20-Poly1305)
-- Simple implementation (timestamp + buffer)
+- Out-of-order delivery support - no retransmission needed
+- Data can arrive before key - buffered until key arrives
+- High latency tolerance - no timeout issues
+- Dummy packet mixing - traffic analysis resistance
+- Multi-layer encryption - AES-256 + ChaCha20-Poly1305
+- Simple implementation - just timestamps and a buffer
 
 ## Quick Start
 
 Add to your Cargo.toml:
 
-```toml
 [dependencies]
 a2f = { git = "https://github.com/kcjsa/a2f" }
-Basic usage:
+
+Basic usage example:
 
 use a2f::{A2FConfig, A2FSender, A2FReceiver, current_timestamp};
 
 fn main() -> anyhow::Result<()> {
-    let master_key = [0x42; 32];  // Share this securely!
+    let master_key = [0x42; 32];
     let config = A2FConfig::default();
     
     let mut sender = A2FSender::new(master_key, &config);
@@ -84,49 +66,37 @@ fn main() -> anyhow::Result<()> {
     
     Ok(())
 }
-Test Results
-Test	Result
-Basic encrypt/decrypt	✅
-Key before data	✅
-Data before key	✅
-Multiple messages mixed	✅
-Dummy packets + packet loss	✅
-UDP communication	✅
-Use Cases
-Starlink / LEO satellite networks
 
-Long-distance high-latency networks
+## Test Results
 
-Mobile / unstable connections
+All tests passed:
 
-Mesh networks
+- Basic encrypt/decrypt: OK
+- Key before data: OK
+- Data before key: OK
+- Multiple messages mixed: OK
+- Dummy packets with packet loss: OK
+- Real UDP communication: OK
 
-Censorship circumvention
+## Use Cases
 
-Security
-Multi-layer: AES-256 + ChaCha20-Poly1305
+- Starlink and LEO satellite networks
+- Long-distance high-latency networks
+- Mobile and unstable connections
+- Mesh networks
+- Censorship circumvention
 
-Traffic analysis resistant
+## Security
 
-No plaintext key transmission
+- Multi-layer encryption: AES-256 plus ChaCha20-Poly1305
+- Traffic analysis resistant due to random packet order
+- No plaintext key transmission
+- Ephemeral session keys
 
-Ephemeral session keys
+## License
 
-License
 MIT or Apache-2.0
 
-Author
-@kcjsa
+## Author
 
----
-
-## 保存してプッシュ
-
-```bash
-cd ~/ミュージック/a2f
-cat > README.md
-# 上記の内容をコピーして貼り付け、Ctrl+Dで保存
-
-git add README.md
-git commit -m "Add README"
-git push origin master
+kcjsa on GitHub
