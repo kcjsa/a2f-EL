@@ -94,7 +94,7 @@ All tests passed:
 - Multi-layer encryption: AES-256 plus ChaCha20-Poly1305
 - Traffic analysis resistant due to random packet order
 - No plaintext key transmission
-- (A2F assumes a reliable or semi-reliable UDP transport such as RakNet.)
+ (A2F assumes a reliable or semi-reliable UDP transport such as RakNet.)
 - Ephemeral session keys
 
 ## License
