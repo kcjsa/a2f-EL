@@ -1,13 +1,14 @@
-// ========== config.rs ==========
+// ========== src/config.rs ==========
 use crate::shuffle::ShuffleScheduler;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]  // Debugを追加
 pub struct A2FConfig {
     pub buffer_timeout_secs: u64,
     pub buffer_max_size: usize,
     pub key_probability: f64,
     pub max_burst: usize,
     pub dummy_probability: f64,
+    pub replay_window_size: u64,
 }
 
 impl Default for A2FConfig {
@@ -18,6 +19,7 @@ impl Default for A2FConfig {
             key_probability: 0.3,
             max_burst: 5,
             dummy_probability: 0.05,
+            replay_window_size: 1024,  // 1024に拡大
         }
     }
 }

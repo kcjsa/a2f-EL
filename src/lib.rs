@@ -1,3 +1,4 @@
+// ========== src/lib.rs ==========
 //! # A2F - Analysis to Fake Protocol
 //!
 //! 非同期・順不同・高遅延耐性を持つ暗号プロトコル
@@ -18,8 +19,14 @@ use rand::RngCore;
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::collections::{HashMap, VecDeque};
 use std::sync::atomic::{AtomicU64, Ordering};
-
-static GLOBAL_SEQ: AtomicU64 = AtomicU64::new(1);
+use lazy_static::lazy_static;
+/*
+lazy_static! {
+    static ref GLOBAL_SEQ: AtomicU64 = AtomicU64::new({
+        use rand::Rng;
+        rand::thread_rng().gen_range(1..u64::MAX)
+    });
+}*/
 
 /// 現在のタイムスタンプをミリ秒単位で取得
 pub fn current_timestamp() -> u64 {
@@ -28,6 +35,9 @@ pub fn current_timestamp() -> u64 {
         .unwrap()
         .as_millis() as u64
 }
+
+// 一時的に固定値に変更
+static GLOBAL_SEQ: AtomicU64 = AtomicU64::new(1);
 
 pub fn next_sequence() -> u64 {
     GLOBAL_SEQ.fetch_add(1, Ordering::SeqCst)
@@ -80,6 +90,40 @@ impl A2FSender {
         Ok(Packet::new(seq, timestamp, PayloadType::EncryptedData, encrypted))
     }
     
+    /// データを送信（内部で自動的に鍵を生成）
+    pub fn send_data(&mut self, data: &[u8]) -> A2FResult<Vec<Packet>> {
+        let ts = current_timestamp();
+        let key_packet = self.generate_key_packet(ts)?;
+        let data_packet = self.encrypt_data(data, ts)?;
+        
+        let mut packets = vec![key_packet, data_packet];
+        packets = self.shuffle_packets(packets);
+        
+        Ok(packets)
+    }
+    
+    /// 複数のデータチャンクを同じセッション鍵で送信
+    pub fn send_multiple(&mut self, chunks: &[&[u8]]) -> A2FResult<Vec<Packet>> {
+        if chunks.is_empty() {
+            return Ok(vec![]);
+        }
+        
+        let ts = current_timestamp();
+        let mut all_packets = Vec::new();
+        
+        let key_packet = self.generate_key_packet(ts)?;
+        all_packets.push(key_packet);
+        
+        for (i, chunk) in chunks.iter().enumerate() {
+            let chunk_ts = ts + i as u64;
+            let data_packet = self.encrypt_data(chunk, chunk_ts)?;
+            all_packets.push(data_packet);
+        }
+        
+        all_packets = self.shuffle_packets(all_packets);
+        Ok(all_packets)
+    }
+    
     /// ダミーパケットを生成
     pub fn generate_dummy_packet(&mut self, timestamp: u64) -> Packet {
         let seq = self.next_seq;
@@ -116,14 +160,11 @@ impl SlidingWindow {
         }
     }
     
-    /// シーケンス番号をチェックし、受信済みとして記録する
     fn check_and_record(&mut self, seq: u64) -> bool {
-        // ウィンドウ下限より古いものは拒否
         if seq < self.min_seq {
             return false;
         }
         
-        // ウィンドウ上限を超えている場合はウィンドウをスライド
         if seq >= self.min_seq + self.window_size {
             let shift = seq - (self.min_seq + self.window_size) + 1;
             for _ in 0..shift {
@@ -135,11 +176,9 @@ impl SlidingWindow {
         
         let index = (seq - self.min_seq) as usize;
         if self.received[index] {
-            // すでに受信済み → リプレイ攻撃
             return false;
         }
         
-        // 初めてのパケット → 受信済みとして記録
         self.received[index] = true;
         true
     }
@@ -164,13 +203,11 @@ impl A2FReceiver {
             crypto: MultiLayerCrypto::new(master_key),
             buffer: TimestampBuffer::new(config.buffer_timeout_secs, config.buffer_max_size),
             pending_keys: HashMap::new(),
-            sliding_window: SlidingWindow::new(128),  // ウィンドウサイズ128
+            sliding_window: SlidingWindow::new(config.replay_window_size),
         }
     }
     
-    /// パケットを受信し、復号できたらデータを返す
     pub fn receive_packet(&mut self, packet: Packet) -> A2FResult<Option<Vec<u8>>> {
-        // リプレイ攻撃対策：スライディングウィンドウでチェック
         if !self.sliding_window.check_and_record(packet.seq) {
             return Err(A2FError::ExpiredSequence(packet.seq));
         }
@@ -196,9 +233,7 @@ impl A2FReceiver {
                     return Ok(Some(self.crypto.decrypt_data(&key, &data)?));
                 }
             }
-            PayloadType::Dummy | PayloadType::Heartbeat => {
-                // 何もしない
-            }
+            PayloadType::Dummy | PayloadType::Heartbeat => {}
         }
         
         Ok(None)

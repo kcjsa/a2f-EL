@@ -1,6 +1,6 @@
 // ========== packet.rs ==========
 use serde::{Serialize, Deserialize};
-use crate::error::A2FResult;
+use crate::error::{A2FError, A2FResult};
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum PayloadType {
@@ -12,8 +12,8 @@ pub enum PayloadType {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Packet {
-    pub seq: u64,              // 平文シーケンス番号（リプレイ対策）
-    pub timestamp: u64,        // 内部タイムスタンプ（暗号化対象）
+    pub seq: u64,
+    pub timestamp: u64,
     pub payload_type: PayloadType,
     pub payload: Vec<u8>,
 }
@@ -47,10 +47,12 @@ impl Packet {
     }
     
     pub fn serialize(&self) -> A2FResult<Vec<u8>> {
-        bincode::serialize(self).map_err(|e| crate::error::A2FError::PacketError(e.to_string()))
+        bincode::serialize(self)
+            .map_err(|e| A2FError::PacketError(format!("シリアライズ失敗: {}", e)))
     }
     
     pub fn deserialize(data: &[u8]) -> A2FResult<Self> {
-        bincode::deserialize(data).map_err(|e| crate::error::A2FError::PacketError(e.to_string()))
+        bincode::deserialize(data)
+            .map_err(|e| A2FError::PacketError(format!("デシリアライズ失敗: {} (データ長: {})", e, data.len())))
     }
 }
