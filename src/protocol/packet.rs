@@ -1,4 +1,3 @@
-// EL版 src/protocol/packet.rs
 use serde::{Serialize, Deserialize};
 use crate::error::{A2FError, A2FResult};
 
