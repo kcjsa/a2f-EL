@@ -53,7 +53,7 @@ The core idea: *"Send in chaos. Receive in order. Timestamps bind everything."*
 Add to your Cargo.toml:
 ```
 [dependencies]
-a2f-el = "0.1.1"
+a2f-el = "0.2.0"
 ```
 Basic usage example:
 ```
