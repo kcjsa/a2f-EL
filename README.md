@@ -40,13 +40,13 @@ The core idea: *"Send in chaos. Receive in order. Timestamps bind everything."*
 
 ## Features
 
-- ✅ **Built-in X25519 key exchange** (Perfect Forward Secrecy)
-- ✅ **ChaCha20-Poly1305 only** (lightweight, no AES)
-- ✅ **Out-of-order delivery support**
-- ✅ **High-latency tolerant**
-- ✅ **Replay attack protection** (sliding window)
-- ✅ **Packet shuffling** (basic traffic analysis resistance)
-- ✅ **No async runtime required**
+-  **Built-in X25519 key exchange** (Perfect Forward Secrecy)
+-  **ChaCha20-Poly1305 only** (lightweight, no AES)
+-  **Out-of-order delivery support**
+-  **High-latency tolerant**
+-  **Replay attack protection** (sliding window)
+-  **Packet shuffling** (basic traffic analysis resistance)
+-  **No async runtime required**
 
 ## Quick Start
 
