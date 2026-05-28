@@ -1,4 +1,3 @@
-// ========== protocol/mod.rs ==========
 mod packet;
 mod buffer;
 

@@ -1,4 +1,3 @@
-// ========== packet.rs ==========
 use serde::{Serialize, Deserialize};
 use crate::error::{A2FError, A2FResult};
 
@@ -6,8 +5,6 @@ use crate::error::{A2FError, A2FResult};
 pub enum PayloadType {
     WrappedKey,
     EncryptedData,
-    Dummy,
-    Heartbeat,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -25,24 +22,6 @@ impl Packet {
             timestamp,
             payload_type,
             payload,
-        }
-    }
-    
-    pub fn dummy(seq: u64, timestamp: u64) -> Self {
-        Self {
-            seq,
-            timestamp,
-            payload_type: PayloadType::Dummy,
-            payload: vec![],
-        }
-    }
-    
-    pub fn heartbeat(seq: u64, timestamp: u64) -> Self {
-        Self {
-            seq,
-            timestamp,
-            payload_type: PayloadType::Heartbeat,
-            payload: vec![],
         }
     }
     
