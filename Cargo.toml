@@ -1,6 +1,6 @@
 [package]
 name = "a2f-el"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Analysis to Fake - EL is a load-reduced version of A2F. It removes AES-256-GCM and uses only chacha20poly."
 license = "Apache-2.0"
