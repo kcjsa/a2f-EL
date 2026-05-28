@@ -24,7 +24,6 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 
-/// 現在のタイムスタンプをミリ秒単位で取得
 pub fn current_timestamp() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
